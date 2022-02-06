@@ -4,11 +4,11 @@
 
 熟悉 Fourier Transform 的童鞋都知道，连续 FT 的公式如下所示：
 
-<img src="https://www.zhihu.com/equation?tex=\mathcal{FT}(f) = \int^{+\infty}_{-\infty}{x(t)e^{-j(2{\pi}f)t}dt}" alt="\mathcal{FT}(f) = \int^{+\infty}_{-\infty}{x(t)e^{-j(2{\pi}f)t}dt}\\" class="ee_img tr_noresize" eeimg="1">
+<img src="https://www.zhihu.com/equation?tex=%5Cmathcal%7BFT%7D%28f%29%20%3D%20%5Cint%5E%7B%2B%5Cinfty%7D_%7B-%5Cinfty%7D%7Bx%28t%29e%5E%7B-j%282%7B%5Cpi%7Df%29t%7Ddt%7D%5C%5C" alt="\mathcal{FT}(f) = \int^{+\infty}_{-\infty}{x(t)e^{-j(2{\pi}f)t}dt}\\" class="ee_img tr_noresize" eeimg="1">
 
 我们先不急于展开对这个生涩的公式（或许是久远的回忆），也不想对其中每一个元素进行细致的探索，而是 **回忆一下 FFT 的效果**
 
-举个栗子，高中计算机老师给了两串数子 **$(t, x)$**, $t=0.1, 0.2, ...100$，希望同学们求出某函数 $x=x(t)$ 所包含的三角函数成分（如下图所示），勤奋的小白眼疾手快，一通暴力搜索后花了2个小时对着还未出来的结果十脸懵逼。
+举个栗子，高中计算机老师给了两串数字 **$(t, x)$**, $t=0.1, 0.2, ...100$，希望同学们求出某函数 $x=x(t)$ 所包含的三角函数成分（如下图所示），勤奋的小白眼疾手快，一通暴力搜索后花了2个小时对着还未出来的结果十脸懵逼。
 
 ![时域信号](./figs/2022-01-23-21-00-10.png)
 
@@ -16,11 +16,7 @@
 
 ![幅频-相频特性](./figs/2022-01-23-21-01-08.png)
 
-<img src="https://www.zhihu.com/equation?tex=x(t) = 3 \cdot \cos{(0.1 \cdot 2\pi t - 54^\circ)} +
-       \cos{(0.25 \cdot 2\pi t - 90^\circ)} +
-       1.5 \cdot \cos{(2\pi t)}" alt="x(t) = 3 \cdot \cos{(0.1 \cdot 2\pi t - 54^\circ)} +
-       \cos{(0.25 \cdot 2\pi t - 90^\circ)} +
-       1.5 \cdot \cos{(2\pi t)}\\" class="ee_img tr_noresize" eeimg="1">
+<img src="https://www.zhihu.com/equation?tex=x%28t%29%20%3D%203%20%5Ccdot%20%5Ccos%7B%280.1%20%5Ccdot%202%5Cpi%20t%20-%2054%5E%5Ccirc%29%7D%20%2B%20%20%20%20%20%20%20%5Ccos%7B%280.25%20%5Ccdot%202%5Cpi%20t%20-%2090%5E%5Ccirc%29%7D%20%2B%20%20%20%20%20%20%201.5%20%5Ccdot%20%5Ccos%7B%282%5Cpi%20t%29%7D%5C%5C" alt="x(t) = 3 \cdot \cos{(0.1 \cdot 2\pi t - 54^\circ)} +       \cos{(0.25 \cdot 2\pi t - 90^\circ)} +       1.5 \cdot \cos{(2\pi t)}\\" class="ee_img tr_noresize" eeimg="1">
 
 瞎扯一通，我们再回顾一下题目，原本简单的信号在时域上的叠加，导致**信息被压缩了**，我们难以通过时域图形简单的判断原来的成分。  
 
@@ -41,30 +37,15 @@
 
 - **空间内积的定义**：
 
-<img src="https://www.zhihu.com/equation?tex=\boldsymbol{<x, y>} = \sum_{i=1}^{3}{x_iy_i}" alt="\boldsymbol{<x, y>} = \sum_{i=1}^{3}{x_iy_i}\\" class="ee_img tr_noresize" eeimg="1">
+<img src="https://www.zhihu.com/equation?tex=%5Cboldsymbol%7B%3Cx%2C%20y%5Cgt%7D%20%3D%20%5Csum_%7Bi%3D1%7D%5E%7B3%7D%7Bx_iy_i%7D%5C%5C" alt="\boldsymbol{<x, y\gt} = \sum_{i=1}^{3}{x_iy_i}\\" class="ee_img tr_noresize" eeimg="1">
 
 - **空间的基**：假定该空间的基为
 
-<img src="https://www.zhihu.com/equation?tex=
-\boldsymbol{E = [e_1, e_2, e_3]} =
-\left [
-\begin{matrix}
-1 & 0 & 0 \\
-0 & 1 & 0 \\
-0 & 0 & 1
-\end{matrix}
-\right ]" alt="\boldsymbol{E = [e_1, e_2, e_3]} =
-\left [
-\begin{matrix}
-1 & 0 & 0 \\
-0 & 1 & 0 \\
-0 & 0 & 1
-\end{matrix}
-\right ]\\" class="ee_img tr_noresize" eeimg="1">
+<img src="https://www.zhihu.com/equation?tex=%5Cboldsymbol%7BE%20%3D%20%5Be_1%2C%20e_2%2C%20e_3%5D%7D%20%3D%5Cleft%20%5B%5Cbegin%7Bmatrix%7D1%20%26%200%20%26%200%20%5C%5C0%20%26%201%20%26%200%20%5C%5C0%20%26%200%20%26%201%5Cend%7Bmatrix%7D%5Cright%20%5D%5C%5C" alt="\boldsymbol{E = [e_1, e_2, e_3]} =\left [\begin{matrix}1 & 0 & 0 \\0 & 1 & 0 \\0 & 0 & 1\end{matrix}\right ]\\" class="ee_img tr_noresize" eeimg="1">
 
 - **向量在空间中的坐标**：假定向量为 $\boldsymbol{x}$，其坐标为该向量在各个基上的投影
 
-<img src="https://www.zhihu.com/equation?tex=\boldsymbol{coordinate = Ev = [e_1^Tx, e_2^Tx, e_3^Tx]}" alt="\boldsymbol{coordinate = Ev = [e_1^Tx, e_2^Tx, e_3^Tx]}\\" class="ee_img tr_noresize" eeimg="1">
+<img src="https://www.zhihu.com/equation?tex=%5Cboldsymbol%7Bcoordinate%20%3D%20Ex%20%3D%20%5Be_1%5ETx%2C%20e_2%5ETx%2C%20e_3%5ETx%5D%7D%5C%5C" alt="\boldsymbol{coordinate = Ex = [e_1^Tx, e_2^Tx, e_3^Tx]}\\" class="ee_img tr_noresize" eeimg="1">
 
 ![欧几里得空间坐标](./figs/2022-01-23-21-25-36.png)
 
@@ -74,29 +55,19 @@
 
 - **空间内积的定义**：
 
-<img src="https://www.zhihu.com/equation?tex=\boldsymbol{<x(t), y(t)>} = \int_{-\infty}^{+\infty}{x(t)y(t)dt}" alt="\boldsymbol{<x(t), y(t)>} = \int_{-\infty}^{+\infty}{x(t)y(t)dt}\\" class="ee_img tr_noresize" eeimg="1">
+<img src="https://www.zhihu.com/equation?tex=%5Cboldsymbol%7B%3Cx%28t%29%2C%20y%28t%29%5Cgt%7D%20%3D%20%5Cint_%7B-%5Cinfty%7D%5E%7B%2B%5Cinfty%7D%7Bx%28t%29y%28t%29dt%7D%5C%5C" alt="\boldsymbol{<x(t), y(t)\gt} = \int_{-\infty}^{+\infty}{x(t)y(t)dt}\\" class="ee_img tr_noresize" eeimg="1">
 
 - **空间的基**：假定该空间的基某一关于参数 $\theta$ 的函数族
 
-<img src="https://www.zhihu.com/equation?tex=\boldsymbol{E} = [...,e(t;\theta_1), e(t;\theta_2), e(t;\theta_3), ...]" alt="\boldsymbol{E} = [...,e(t;\theta_1), e(t;\theta_2), e(t;\theta_3), ...]\\" class="ee_img tr_noresize" eeimg="1">
+<img src="https://www.zhihu.com/equation?tex=%5Cboldsymbol%7BE%7D%20%3D%20%5B...%2Ce%28t%3B%5Ctheta_1%29%2C%20e%28t%3B%5Ctheta_2%29%2C%20e%28t%3B%5Ctheta_3%29%2C%20...%5D%5C%5C" alt="\boldsymbol{E} = [...,e(t;\theta_1), e(t;\theta_2), e(t;\theta_3), ...]\\" class="ee_img tr_noresize" eeimg="1">
 
 - **向量在空间中的坐标**：假定向量为 $\boldsymbol{x}(t)$，其坐标为该向量在各个基上的投影
 
-<img src="https://www.zhihu.com/equation?tex=\boldsymbol{coordinate} =
-\left [...,
-    \int_{-\infty}^{+\infty}{x(t)e(t;\theta_1)dt},
-    \int_{-\infty}^{+\infty}{x(t)e(t;\theta_2)dt},
-    \int_{-\infty}^{+\infty}{x(t)e(t;\theta_3)dt}, ...
-\right]" alt="\boldsymbol{coordinate} =
-\left [...,
-    \int_{-\infty}^{+\infty}{x(t)e(t;\theta_1)dt},
-    \int_{-\infty}^{+\infty}{x(t)e(t;\theta_2)dt},
-    \int_{-\infty}^{+\infty}{x(t)e(t;\theta_3)dt}, ...
-\right]\\" class="ee_img tr_noresize" eeimg="1">
+<img src="https://www.zhihu.com/equation?tex=%5Cboldsymbol%7Bcoordinate%7D%20%3D%5Cleft%20%5B...%2C%20%20%20%20%5Cint_%7B-%5Cinfty%7D%5E%7B%2B%5Cinfty%7D%7Bx%28t%29e%28t%3B%5Ctheta_1%29dt%7D%2C%20%20%20%20%5Cint_%7B-%5Cinfty%7D%5E%7B%2B%5Cinfty%7D%7Bx%28t%29e%28t%3B%5Ctheta_2%29dt%7D%2C%20%20%20%20%5Cint_%7B-%5Cinfty%7D%5E%7B%2B%5Cinfty%7D%7Bx%28t%29e%28t%3B%5Ctheta_3%29dt%7D%2C%20...%5Cright%5D%5C%5C" alt="\boldsymbol{coordinate} =\left [...,    \int_{-\infty}^{+\infty}{x(t)e(t;\theta_1)dt},    \int_{-\infty}^{+\infty}{x(t)e(t;\theta_2)dt},    \int_{-\infty}^{+\infty}{x(t)e(t;\theta_3)dt}, ...\right]\\" class="ee_img tr_noresize" eeimg="1">
 
 &emsp;&emsp;&ensp; 换种方式表达：
 
-<img src="https://www.zhihu.com/equation?tex=coordinate(\theta) = \int_{-\infty}^{+\infty}{x(t)e(t;\theta)dt}" alt="coordinate(\theta) = \int_{-\infty}^{+\infty}{x(t)e(t;\theta)dt}\\" class="ee_img tr_noresize" eeimg="1">
+<img src="https://www.zhihu.com/equation?tex=coordinate%28%5Ctheta%29%20%3D%20%5Cint_%7B-%5Cinfty%7D%5E%7B%2B%5Cinfty%7D%7Bx%28t%29e%28t%3B%5Ctheta%29dt%7D%5C%5C" alt="coordinate(\theta) = \int_{-\infty}^{+\infty}{x(t)e(t;\theta)dt}\\" class="ee_img tr_noresize" eeimg="1">
 
 ![hilbert空间](./figs/2022-01-23-21-27-03.png)
 
@@ -104,27 +75,11 @@
 
 回顾希尔伯特空间中的 **坐标表示** 与 **傅里叶变换** 公式
 
-<img src="https://www.zhihu.com/equation?tex= \left \{
-\begin{aligned}
-coordinate(\theta) = & \int_{-\infty}^{+\infty}{x(t)e(t;\theta)dt} \\\\
-\mathcal{FT}(f) = & \int^{+\infty}_{-\infty}{x(t)e^{-j(2{\pi}f)t}dt}  
-\end{aligned} \\
-\right." alt=" \left \{
-\begin{aligned}
-coordinate(\theta) = & \int_{-\infty}^{+\infty}{x(t)e(t;\theta)dt} \\
-\mathcal{FT}(f) = & \int^{+\infty}_{-\infty}{x(t)e^{-j(2{\pi}f)t}dt}  
-\end{aligned}
-\right.\\" class="ee_img tr_noresize" eeimg="1">
+<img src="https://www.zhihu.com/equation?tex=%20%5Cleft%20%5C%7B%5Cbegin%7Baligned%7Dcoordinate%28%5Ctheta%29%20%3D%20%26%20%5Cint_%7B-%5Cinfty%7D%5E%7B%2B%5Cinfty%7D%7Bx%28t%29e%28t%3B%5Ctheta%29dt%7D%20%5C%5C%5Cmathcal%7BFT%7D%28f%29%20%3D%20%26%20%5Cint%5E%7B%2B%5Cinfty%7D_%7B-%5Cinfty%7D%7Bx%28t%29e%5E%7B-j%282%7B%5Cpi%7Df%29t%7Ddt%7D%20%20%5Cend%7Baligned%7D%5Cright.%5C%5C" alt=" \left \{\begin{aligned}coordinate(\theta) = & \int_{-\infty}^{+\infty}{x(t)e(t;\theta)dt} \\\mathcal{FT}(f) = & \int^{+\infty}_{-\infty}{x(t)e^{-j(2{\pi}f)t}dt}  \end{aligned}\right.\\" class="ee_img tr_noresize" eeimg="1">
 
 我们不难发现，傅里叶变换其实是希尔伯特空间中一种特殊的坐标表示方式，该坐标的基为三角函数族
 
-<img src="https://www.zhihu.com/equation?tex=\begin{aligned}
-\boldsymbol{E_{fourier}} = & [..., e(t;\theta_1), e(t;\theta_2), e(t;\theta_3), ...] \\
-               = & [..., e^{-j(2{\pi}f_1)t}, e^{-j(2{\pi}f_2)t}, e^{-j(2{\pi}f_3)t}, ...]
-\end{aligned}" alt="\begin{aligned}
-\boldsymbol{E_{fourier}} = & [..., e(t;\theta_1), e(t;\theta_2), e(t;\theta_3), ...] \\
-               = & [..., e^{-j(2{\pi}f_1)t}, e^{-j(2{\pi}f_2)t}, e^{-j(2{\pi}f_3)t}, ...]
-\end{aligned}\\" class="ee_img tr_noresize" eeimg="1">
+<img src="https://www.zhihu.com/equation?tex=%5Cbegin%7Baligned%7D%5Cboldsymbol%7BE_%7Bfourier%7D%7D%20%3D%20%26%20%5B...%2C%20e%28t%3B%5Ctheta_1%29%2C%20e%28t%3B%5Ctheta_2%29%2C%20e%28t%3B%5Ctheta_3%29%2C%20...%5D%20%5C%5C%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3D%20%26%20%5B...%2C%20e%5E%7B-j%282%7B%5Cpi%7Df_1%29t%7D%2C%20e%5E%7B-j%282%7B%5Cpi%7Df_2%29t%7D%2C%20e%5E%7B-j%282%7B%5Cpi%7Df_3%29t%7D%2C%20...%5D%5Cend%7Baligned%7D%5C%5C" alt="\begin{aligned}\boldsymbol{E_{fourier}} = & [..., e(t;\theta_1), e(t;\theta_2), e(t;\theta_3), ...] \\               = & [..., e^{-j(2{\pi}f_1)t}, e^{-j(2{\pi}f_2)t}, e^{-j(2{\pi}f_3)t}, ...]\end{aligned}\\" class="ee_img tr_noresize" eeimg="1">
 
 换句话说，傅里叶变换其实是希尔伯特空间中，以
 **三角函数族基$E_{fourier}$**
@@ -134,7 +89,7 @@ coordinate(\theta) = & \int_{-\infty}^{+\infty}{x(t)e(t;\theta)dt} \\
 **那我便换个角度，用 $\boldsymbol{E_{fourier}}$ 来观测信号**
 
 > $^*\boldsymbol{E_{normal}}$ 指狄拉克函数形成的基  
-> <img src="https://www.zhihu.com/equation?tex=\boldsymbol{E_{normal}} = [...,\delta(t - t_1), \delta(t - t_2), \delta(t - t_3),...]" alt="\boldsymbol{E_{normal}} = [...,\delta(t - t_1), \delta(t - t_2), \delta(t - t_3),...]\\" class="ee_img tr_noresize" eeimg="1">
+> <img src="https://www.zhihu.com/equation?tex=%5Cboldsymbol%7BE_%7Bnormal%7D%7D%20%3D%20%5B...%2C%5Cdelta%28t%20-%20t_1%29%2C%20%5Cdelta%28t%20-%20t_2%29%2C%20%5Cdelta%28t%20-%20t_3%29%2C...%5D%5C%5C" alt="\boldsymbol{E_{normal}} = [...,\delta(t - t_1), \delta(t - t_2), \delta(t - t_3),...]\\" class="ee_img tr_noresize" eeimg="1">
 > &ensp;满足 $coordinate(t_i)  = x(t_i) = \int_{-\infty}^{+\infty}{x(t)\delta(t - t_i)dt}$
 
 ![源于wiki](./figs/Fourier_transform_time_and_frequency_domains_(small).gif)
