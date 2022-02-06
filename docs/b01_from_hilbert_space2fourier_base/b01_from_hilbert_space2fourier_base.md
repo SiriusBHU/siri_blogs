@@ -47,11 +47,13 @@ $$\boldsymbol{<x, y>} = \sum_{i=1}^{3}{x_iy_i}$$
 
 $$
 \boldsymbol{E = [e_1, e_2, e_3]} =
-\left[\begin{matrix}
-1 & 0 & 0 \\\\
-0 & 1 & 0 \\\\
+\left [
+\begin{matrix}
+1 & 0 & 0 \\
+0 & 1 & 0 \\
 0 & 0 & 1
-\end{matrix} \right]
+\end{matrix}
+\right ]
 $$
 
 - **向量在空间中的坐标**：假定向量为 $\boldsymbol{x}$，其坐标为该向量在各个基上的投影
@@ -75,7 +77,7 @@ $$\boldsymbol{E} = [...,e(t;\theta_1), e(t;\theta_2), e(t;\theta_3), ...]$$
 - **向量在空间中的坐标**：假定向量为 $\boldsymbol{x}(t)$，其坐标为该向量在各个基上的投影
 
 $$\boldsymbol{coordinate} =
-\left[...,
+\left [...,
     \int_{-\infty}^{+\infty}{x(t)e(t;\theta_1)dt},
     \int_{-\infty}^{+\infty}{x(t)e(t;\theta_2)dt},
     \int_{-\infty}^{+\infty}{x(t)e(t;\theta_3)dt}, ...
@@ -92,7 +94,7 @@ $$coordinate(\theta) = \int_{-\infty}^{+\infty}{x(t)e(t;\theta)dt}$$
 
 回顾希尔伯特空间中的 **坐标表示** 与 **傅里叶变换** 公式
 
-$$ \left\{
+$$ \left \{
 \begin{aligned}
 coordinate(\theta) = & \int_{-\infty}^{+\infty}{x(t)e(t;\theta)dt} \\
 \mathcal{FT}(f) = & \int^{+\infty}_{-\infty}{x(t)e^{-j(2{\pi}f)t}dt}  

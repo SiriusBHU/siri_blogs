@@ -1,133 +1,150 @@
-# ����Ҷ�任 -- �� Hilbert Space ������Ҷ�任��
+# 傅里叶变换 -- 从 Hilbert Space 到傅里叶变换基
 
-## 1. ���ԣ�����Ҷ�任����Щʲô��
+## 1. 引言：傅里叶变换能做些什么？
 
-��Ϥ Fourier Transform ��ͯЬ��֪�������� FT �Ĺ�ʽ������ʾ��
+熟悉 Fourier Transform 的童鞋都知道，连续 FT 的公式如下所示：
 
 <img src="https://www.zhihu.com/equation?tex=\mathcal{FT}(f) = \int^{+\infty}_{-\infty}{x(t)e^{-j(2{\pi}f)t}dt}" alt="\mathcal{FT}(f) = \int^{+\infty}_{-\infty}{x(t)e^{-j(2{\pi}f)t}dt}\\" class="ee_img tr_noresize" eeimg="1">
 
+我们先不急于展开对这个生涩的公式（或许是久远的回忆），也不想对其中每一个元素进行细致的探索，而是 **回忆一下 FFT 的效果**
 
-�����Ȳ�����չ���������ɬ�Ĺ�ʽ�������Ǿ�Զ�Ļ��䣩��Ҳ���������ÿһ��Ԫ�ؽ���ϸ�µ�̽�������� **����һ�� FFT ��Ч��**
+举个栗子，高中计算机老师给了两串数子 **$(t, x)$**, $t=0.1, 0.2, ...100$，希望同学们求出某函数 $x=x(t)$ 所包含的三角函数成分（如下图所示），勤奋的小白眼疾手快，一通暴力搜索后花了2个小时对着还未出来的结果十脸懵逼。
 
-�ٸ����ӣ����м������ʦ������������ **<img src="https://www.zhihu.com/equation?tex=(t, x)" alt="(t, x)" class="ee_img tr_noresize" eeimg="1">**, <img src="https://www.zhihu.com/equation?tex=t=0.1, 0.2, ...100" alt="t=0.1, 0.2, ...100" class="ee_img tr_noresize" eeimg="1">��ϣ��ͬѧ�����ĳ���� <img src="https://www.zhihu.com/equation?tex=x=x(t)" alt="x=x(t)" class="ee_img tr_noresize" eeimg="1"> �����������Ǻ����ɷ֣�����ͼ��ʾ�����ڷܵ�С���ۼ��ֿ죬һͨ������������2��Сʱ���Ż�δ�����Ľ��ʮ���±ơ�
+![时域信号](./figs/2022-01-23-21-00-10.png)
 
-![](./figs/2022-01-23-21-00-10.png)
+聪明的小黑脑子一转，嘿嘿嘿！不如用 Fourier Transform (FT)，然后调了个 fftpack 2 分钟搞出给了三角信号幅频-相频特性（下图），交上了作业
 
-������С������һת���ٺٺ٣������� Fourier Transform (FT)��Ȼ����˸� fftpack 2 ���Ӹ�����������źŷ�Ƶ-��Ƶ���ԣ���ͼ������������ҵ
+![幅频-相频特性](./figs/2022-01-23-21-01-08.png)
 
-![](./figs/2022-01-23-21-01-08.png)
-
-<img src="https://www.zhihu.com/equation?tex=" alt="" class="ee_img tr_noresize" eeimg="1">
-x(t) = 3 \cdot \cos{(0.1 \cdot 2\pi t - 54^\circ)} +
+<img src="https://www.zhihu.com/equation?tex=x(t) = 3 \cdot \cos{(0.1 \cdot 2\pi t - 54^\circ)} +
        \cos{(0.25 \cdot 2\pi t - 90^\circ)} +
-       1.5 \cdot \cos{(2\pi t)}
-<img src="https://www.zhihu.com/equation?tex=" alt="" class="ee_img tr_noresize" eeimg="1">
+       1.5 \cdot \cos{(2\pi t)}" alt="x(t) = 3 \cdot \cos{(0.1 \cdot 2\pi t - 54^\circ)} +
+       \cos{(0.25 \cdot 2\pi t - 90^\circ)} +
+       1.5 \cdot \cos{(2\pi t)}\\" class="ee_img tr_noresize" eeimg="1">
 
-Ϲ��һͨ�������ٻع�һ����Ŀ��ԭ���򵥵��ź���ʱ���ϵĵ��ӣ�����**��Ϣ��ѹ����**����������ͨ��ʱ��ͼ�μ򵥵��ж�ԭ���ĳɷ֡�  
+瞎扯一通，我们再回顾一下题目，原本简单的信号在时域上的叠加，导致**信息被压缩了**，我们难以通过时域图形简单的判断原来的成分。  
 
-![](./figs/2022-01-23-21-13-13.png)
+![信息压缩](./figs/2022-01-23-21-13-13.png)
 
-������Ҷ�任ȱ�ɽ�ԭ��ѹ������Ϣ��һ����ԭ��������ʽ���  
-����Ҷ�任 = **�źŽ⹹��**�����ź� **���ӵ�ʱ�򹹳�** �⹹Ϊ **��������Ƶ���ʾ**  
-��[�����еĻ���](https://www.zhihu.com/question/279808864/answer/498939249)��˵���� **�䷽��ԭ��**  
+但傅里叶变换缺可将原先压缩的信息进一步还原。换个方式表达：  
+傅里叶变换 = **信号解构器**，将信号 **复杂的时域构成** 解构为 **简明清晰频域表示**  
+用[【大佬的话】](https://www.zhihu.com/question/279808864/answer/498939249)来说，叫 **配方还原机**  
 
-��������Ҳ������̽�� Fouier Transform ����Ĺ���������Ӧ�ã����ǻع�ͷ����  
-**�������ʴ�أ��������Լ�**��Ϊʲô FT ��ʵ�ֽ⹹��Ч��
+这里我们也不急于探索 Fouier Transform 更多的工程意义与应用，而是回过头来，  
+**想问天问大地，问问我自己**，为什么 FT 能实现解构的效果
 
-## 2. ��ŷ�����(Euclidean)�ռ䵽ϣ������(Hilbert)�ռ�
+## 2. 从欧几里得(Euclidean)空间到希尔伯特(Hilbert)空间
 
-### 2.1 ŷ����ÿռ�
+### 2.1 欧几里得空间
 
-ŷ����ÿռ䣬�ֳ�Ϊ����άʵ�ڻ��걸�ռ䣬��Ȼ�ˣ��۲���Ҫ����**�걸�ռ�**��**�ڻ��ռ�**��**����ά** �ȸ��������ۡ�����άŷ����ÿռ�Ϊ��������ͼ��ʾ������ֻ��Ҫ֪����
+欧几里得空间，又称为有限维实内积完备空间，当然了，咱不需要纠结**完备空间**、**内积空间**、**有限维** 等概念与字眼。以三维欧几里得空间为例（如下图所示），咱只需要知道：
 
-- **�ռ��ڻ��Ķ���**��
+- **空间内积的定义**：
+
+<img src="https://www.zhihu.com/equation?tex=\boldsymbol{<x, y>} = \sum_{i=1}^{3}{x_iy_i}" alt="\boldsymbol{<x, y>} = \sum_{i=1}^{3}{x_iy_i}\\" class="ee_img tr_noresize" eeimg="1">
+
+- **空间的基**：假定该空间的基为
 
 <img src="https://www.zhihu.com/equation?tex=
-\boldsymbol{<x, y>} = \sum_{i=1}^{3}{x_iy_i}" alt="\boldsymbol{<x, y>} = \sum_{i=1}^{3}{x_iy_i}\\" class="ee_img tr_noresize" eeimg="1">
-
-- **�ռ�Ļ�**���ٶ��ÿռ�Ļ�Ϊ
-<img src="https://www.zhihu.com/equation?tex=" alt="" class="ee_img tr_noresize" eeimg="1">
 \boldsymbol{E = [e_1, e_2, e_3]} =
-\left[\begin{matrix}
+\left [
+\begin{matrix}
 1 & 0 & 0 \\
 0 & 1 & 0 \\
 0 & 0 & 1
-\end{matrix} \right]
+\end{matrix}
+\right ]" alt="\boldsymbol{E = [e_1, e_2, e_3]} =
+\left [
+\begin{matrix}
+1 & 0 & 0 \\
+0 & 1 & 0 \\
+0 & 0 & 1
+\end{matrix}
+\right ]\\" class="ee_img tr_noresize" eeimg="1">
 
-<img src="https://www.zhihu.com/equation?tex=- **�����ڿռ��е�����**���ٶ�����Ϊ <img src="https://www.zhihu.com/equation?tex=\boldsymbol{x}" alt="\boldsymbol{x}" class="ee_img tr_noresize" eeimg="1">��������Ϊ�������ڸ������ϵ�ͶӰ" alt="- **�����ڿռ��е�����**���ٶ�����Ϊ <img src="https://www.zhihu.com/equation?tex=\boldsymbol{x}" alt="\boldsymbol{x}" class="ee_img tr_noresize" eeimg="1">��������Ϊ�������ڸ������ϵ�ͶӰ\\" class="ee_img tr_noresize" eeimg="1">
-\boldsymbol{coordinate = Ev = [e_1^Tx, e_2^Tx, e_3^Tx]}<img src="https://www.zhihu.com/equation?tex=" alt="" class="ee_img tr_noresize" eeimg="1">
+- **向量在空间中的坐标**：假定向量为 $\boldsymbol{x}$，其坐标为该向量在各个基上的投影
 
-![](./figs/2022-01-23-21-25-36.png)
+<img src="https://www.zhihu.com/equation?tex=\boldsymbol{coordinate = Ev = [e_1^Tx, e_2^Tx, e_3^Tx]}" alt="\boldsymbol{coordinate = Ev = [e_1^Tx, e_2^Tx, e_3^Tx]}\\" class="ee_img tr_noresize" eeimg="1">
 
-### 2.2 ϣ�����ؿռ�
+![欧几里得空间坐标](./figs/2022-01-23-21-25-36.png)
 
-������ǵ�Ŀ�ⲻ����������ά�ȣ���ŷ����ÿռ���չΪ����ά�Ⱥ�ʵ���γ��� **ϣ�����ؿռ�**����ŷʽ�ռ��Ӧ�ģ����ڻ����壬�ռ�������������������Ϊ��
+### 2.2 希尔伯特空间
 
-- **�ռ��ڻ��Ķ���**��
+如果我们的目光不拘泥与有限维度，当欧几里得空间扩展为无限维度后，实质形成了 **希尔伯特空间**。与欧式空间对应的，其内积定义，空间基，与向量坐标可描述为：
+
+- **空间内积的定义**：
 
 <img src="https://www.zhihu.com/equation?tex=\boldsymbol{<x(t), y(t)>} = \int_{-\infty}^{+\infty}{x(t)y(t)dt}" alt="\boldsymbol{<x(t), y(t)>} = \int_{-\infty}^{+\infty}{x(t)y(t)dt}\\" class="ee_img tr_noresize" eeimg="1">
 
-- **�ռ�Ļ�**���ٶ��ÿռ�Ļ�ĳһ���ڲ��� <img src="https://www.zhihu.com/equation?tex=\theta" alt="\theta" class="ee_img tr_noresize" eeimg="1"> �ĺ�����
+- **空间的基**：假定该空间的基某一关于参数 $\theta$ 的函数族
 
 <img src="https://www.zhihu.com/equation?tex=\boldsymbol{E} = [...,e(t;\theta_1), e(t;\theta_2), e(t;\theta_3), ...]" alt="\boldsymbol{E} = [...,e(t;\theta_1), e(t;\theta_2), e(t;\theta_3), ...]\\" class="ee_img tr_noresize" eeimg="1">
 
-- **�����ڿռ��е�����**���ٶ�����Ϊ <img src="https://www.zhihu.com/equation?tex=\boldsymbol{x}(t)" alt="\boldsymbol{x}(t)" class="ee_img tr_noresize" eeimg="1">��������Ϊ�������ڸ������ϵ�ͶӰ
-<img src="https://www.zhihu.com/equation?tex=" alt="" class="ee_img tr_noresize" eeimg="1">\boldsymbol{coordinate} =
-\left[...,
+- **向量在空间中的坐标**：假定向量为 $\boldsymbol{x}(t)$，其坐标为该向量在各个基上的投影
+
+<img src="https://www.zhihu.com/equation?tex=\boldsymbol{coordinate} =
+\left [...,
     \int_{-\infty}^{+\infty}{x(t)e(t;\theta_1)dt},
     \int_{-\infty}^{+\infty}{x(t)e(t;\theta_2)dt},
     \int_{-\infty}^{+\infty}{x(t)e(t;\theta_3)dt}, ...
-\right]
-<img src="https://www.zhihu.com/equation?tex=" alt="" class="ee_img tr_noresize" eeimg="1">
-&emsp;&emsp;&ensp; ���ַ�ʽ���
-<font color=red>
+\right]" alt="\boldsymbol{coordinate} =
+\left [...,
+    \int_{-\infty}^{+\infty}{x(t)e(t;\theta_1)dt},
+    \int_{-\infty}^{+\infty}{x(t)e(t;\theta_2)dt},
+    \int_{-\infty}^{+\infty}{x(t)e(t;\theta_3)dt}, ...
+\right]\\" class="ee_img tr_noresize" eeimg="1">
+
+&emsp;&emsp;&ensp; 换种方式表达：
 
 <img src="https://www.zhihu.com/equation?tex=coordinate(\theta) = \int_{-\infty}^{+\infty}{x(t)e(t;\theta)dt}" alt="coordinate(\theta) = \int_{-\infty}^{+\infty}{x(t)e(t;\theta)dt}\\" class="ee_img tr_noresize" eeimg="1">
 
-</font>
+![hilbert空间](./figs/2022-01-23-21-27-03.png)
 
-![](./figs/2022-01-23-21-27-03.png)
+## 3. 从 Hilbert Space 到傅里叶变换基
 
-## 3. �� Hilbert Space ������Ҷ�任��
+回顾希尔伯特空间中的 **坐标表示** 与 **傅里叶变换** 公式
 
-�ع�ϣ�����ؿռ��е� **�����ʾ** �� **����Ҷ�任** ��ʽ
-<img src="https://www.zhihu.com/equation?tex=" alt="" class="ee_img tr_noresize" eeimg="1"> \left\{
+<img src="https://www.zhihu.com/equation?tex= \left \{
+\begin{aligned}
+coordinate(\theta) = & \int_{-\infty}^{+\infty}{x(t)e(t;\theta)dt} \\\\
+\mathcal{FT}(f) = & \int^{+\infty}_{-\infty}{x(t)e^{-j(2{\pi}f)t}dt}  
+\end{aligned} \\
+\right." alt=" \left \{
 \begin{aligned}
 coordinate(\theta) = & \int_{-\infty}^{+\infty}{x(t)e(t;\theta)dt} \\
 \mathcal{FT}(f) = & \int^{+\infty}_{-\infty}{x(t)e^{-j(2{\pi}f)t}dt}  
 \end{aligned}
-\right.
+\right.\\" class="ee_img tr_noresize" eeimg="1">
 
-<img src="https://www.zhihu.com/equation?tex=���ǲ��ѷ��֣�����Ҷ�任��ʵ��ϣ�����ؿռ���һ������������ʾ��ʽ��������Ļ�Ϊ���Ǻ�����" alt="���ǲ��ѷ��֣�����Ҷ�任��ʵ��ϣ�����ؿռ���һ������������ʾ��ʽ��������Ļ�Ϊ���Ǻ�����\\" class="ee_img tr_noresize" eeimg="1">
+我们不难发现，傅里叶变换其实是希尔伯特空间中一种特殊的坐标表示方式，该坐标的基为三角函数族
 
-\begin{aligned}
+<img src="https://www.zhihu.com/equation?tex=\begin{aligned}
 \boldsymbol{E_{fourier}} = & [..., e(t;\theta_1), e(t;\theta_2), e(t;\theta_3), ...] \\
                = & [..., e^{-j(2{\pi}f_1)t}, e^{-j(2{\pi}f_2)t}, e^{-j(2{\pi}f_3)t}, ...]
-\end{aligned}
-<img src="https://www.zhihu.com/equation?tex=" alt="" class="ee_img tr_noresize" eeimg="1">
-���仰˵������Ҷ�任��ʵ��ϣ�����ؿռ��У���
-<font color=blue>**���Ǻ������<img src="https://www.zhihu.com/equation?tex=E_{fourier}" alt="E_{fourier}" class="ee_img tr_noresize" eeimg="1">**</font>
-ȡ��������<img src="https://www.zhihu.com/equation?tex=^*\boldsymbol{E_{normal}}" alt="^*\boldsymbol{E_{normal}}" class="ee_img tr_noresize" eeimg="1">��
-<font color=blue>**�����ʾ����**</font>��  
-��Ҷ���ϣ�����ؿռ����棬ֻ������������ <img src="https://www.zhihu.com/equation?tex=\boldsymbol{E_{normal}}" alt="\boldsymbol{E_{normal}}" class="ee_img tr_noresize" eeimg="1"> ���źţ����� <img src="https://www.zhihu.com/equation?tex=x(t)" alt="x(t)" class="ee_img tr_noresize" eeimg="1"> ���ڸ��ӿ���̫����
-<font color=blue>**���ұ㻻���Ƕȣ��� <img src="https://www.zhihu.com/equation?tex=\boldsymbol{E_{fourier}}" alt="\boldsymbol{E_{fourier}}" class="ee_img tr_noresize" eeimg="1"> ���۲��ź�**</font>
+\end{aligned}" alt="\begin{aligned}
+\boldsymbol{E_{fourier}} = & [..., e(t;\theta_1), e(t;\theta_2), e(t;\theta_3), ...] \\
+               = & [..., e^{-j(2{\pi}f_1)t}, e^{-j(2{\pi}f_2)t}, e^{-j(2{\pi}f_3)t}, ...]
+\end{aligned}\\" class="ee_img tr_noresize" eeimg="1">
 
-> <img src="https://www.zhihu.com/equation?tex=^*\boldsymbol{E_{normal}}" alt="^*\boldsymbol{E_{normal}}" class="ee_img tr_noresize" eeimg="1">�����������ָ�����˺����γɵĻ�  
-> 
-<img src="https://www.zhihu.com/equation?tex=\boldsymbol{E_{normal}} = [...,\delta(t - t_1), \delta(t - t_2), \delta(t - t_3),...]" alt="\boldsymbol{E_{normal}} = [...,\delta(t - t_1), \delta(t - t_2), \delta(t - t_3),...]\\" class="ee_img tr_noresize" eeimg="1">
+换句话说，傅里叶变换其实是希尔伯特空间中，以
+**三角函数族基$E_{fourier}$**
+取代正常基$^*\boldsymbol{E_{normal}}$的
+**坐标表示方法**。  
+大家都在希尔伯特空间里面，只不过我正常用 $\boldsymbol{E_{normal}}$ 看信号，发现 $x(t)$ 过于复杂看不太懂，
+**那我便换个角度，用 $\boldsymbol{E_{fourier}}$ 来观测信号**
 
-> &ensp;���� <img src="https://www.zhihu.com/equation?tex=coordinate(t_i)  = x(t_i) = \int_{-\infty}^{+\infty}{x(t)\delta(t - t_i)dt}" alt="coordinate(t_i)  = x(t_i) = \int_{-\infty}^{+\infty}{x(t)\delta(t - t_i)dt}" class="ee_img tr_noresize" eeimg="1">
+> $^*\boldsymbol{E_{normal}}$ 指狄拉克函数形成的基  
+> <img src="https://www.zhihu.com/equation?tex=\boldsymbol{E_{normal}} = [...,\delta(t - t_1), \delta(t - t_2), \delta(t - t_3),...]" alt="\boldsymbol{E_{normal}} = [...,\delta(t - t_1), \delta(t - t_2), \delta(t - t_3),...]\\" class="ee_img tr_noresize" eeimg="1">
+> &ensp;满足 $coordinate(t_i)  = x(t_i) = \int_{-\infty}^{+\infty}{x(t)\delta(t - t_i)dt}$
 
-![Դ��wiki](./figs/Fourier_transform_time_and_frequency_domains_(small).gif)
+![源于wiki](./figs/Fourier_transform_time_and_frequency_domains_(small).gif)
 
-## 4. XXX�任 -- �任���ǹ۲���ӽ�
+## 4. XXX变换 -- 变换的是观察的视角
 
-˵��������뵱�������Դ�����ѧϰ������任���������������ڽ�������δ�һ������ϵ�任����һ������ϵ��maybe ������һ�� zhexue ��˼��������**��ͬ�ĽǶ�**��һ��������й۲죬�������Եõ�һЩ**��ѹ����������������Ϣ**
+说到这里，想想当初在线性代数中学习的坐标变换，或许不仅仅是在教我们如何从一个坐标系变换到另一个坐标系，maybe 更隐含一层 zhexue 意思：尝试用**不同的角度**对一个现象进行观察，或许可以得到一些**被压缩、隐秘起来的信息**（说远了，doge）
 
-��˵Զ�ˣ�doge��
+说回来，不仅仅是傅里叶变换，包括控制人熟悉的拉普拉斯变换，信号人熟知的小波变换，乃至神经网络的非线性变换，从本文的立意出发，都可视作基于不同的角度（不同的坐标基）观测信号，**使之成分清晰，意义明确**
 
-˵�������������Ǹ���Ҷ�任��������������Ϥ��������˹�任���ź�����֪��С���任������������ķ����Ա任���ӱ��ĵ���������������������ڲ�ͬ�ĽǶȣ���ͬ����������۲��źţ�**ʹ֮�ɷ�������������ȷ**
+![源于知乎](https://pic2.zhimg.com/80/cfae89c24cc167c028f02368ee509a68_720w.jpg?source=1940ef5c)
 
-![Դ��֪��](https://pic2.zhimg.com/80/cfae89c24cc167c028f02368ee509a68_720w.jpg?source=1940ef5c)
-
-һЩ������д�˽�����뷨��ϣ������������~
+一些理解与夹带私货的想法，希望能有所助益~
